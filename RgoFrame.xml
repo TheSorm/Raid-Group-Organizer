@@ -326,7 +326,9 @@
 								<Scripts>
 									<OnTextChanged>
 										if(trimText(self:GetText()) == "") then
-											SavePresetButton:Disable() else SavePresetButton:Enable()
+											SaveValidationErrors["presetNameEmpty"] = true
+										else
+											SaveValidationErrors["presetNameEmpty"] = false
 										end
 									</OnTextChanged>
 									<OnKeyUp function="RgoFrame_OnKeyUp"/>
@@ -495,6 +497,8 @@
 						</Anchors>
 						<Scripts>
 							<OnClick function="RgoFrameSave_OnClick"/>
+							<OnEnter function="RgoFrameSave_OnEnter"/>
+							<OnLeave function="RgoFrameSave_OnLeave"/>
 						</Scripts>
 					</Button>
 					<EditBox name="ShareEditBox" inherits="RgoNameEditBox">
@@ -508,7 +512,11 @@
 						<Scripts>
 							<OnTextChanged>
 								local text = trimText(self:GetText())
-								if(text == "") then ShareButton:Disable() else ShareButton:Enable() end
+								if(text == "") then
+									ShareButton:Disable()
+								else
+									ShareButton:Enable()
+								end
 							</OnTextChanged>
 						</Scripts>
 					</EditBox>

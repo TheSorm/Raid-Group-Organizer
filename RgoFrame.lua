@@ -8,6 +8,8 @@ local transmittedPresetName = nil
 local originalPoint = {}
 local dropTarget = nil
 
+SaveValidationErrors = {["doubleName"] = nil, ["presetNameEmpty"] = false}
+
 local function visitPlayerInfos(visitNameAndClass)
 	local numTotal = GetNumGuildMembers();
 	for i = 1, numTotal do
@@ -179,14 +181,13 @@ local function checkDuplicatePlayers(group)
 	for i=1, 40 do
 		for j=i + 1, 40 do
 			if group[i] ~= nil and group[i] == group[j] then
-				message(format("Player %s is set multiple times", group[i]))
-				return
+				return group[i]
 			end
 		end
 	end
 end
 
-function RgoFrameSave_OnClick(self, button)
+local function createPresetGroupsTable()
 	local group = {}
 	for i = 1, 8 do
 		for j = 1, 5 do
@@ -197,6 +198,28 @@ function RgoFrameSave_OnClick(self, button)
 			group[(i - 1) * 5 + j] = playerName
 		end
 	end
+	return group
+end
+
+local function createErrorMessages()
+	local doubleName = SaveValidationErrors["doubleName"]
+	local presetNameEmpty = SaveValidationErrors["presetNameEmpty"]
+	local errorMessages = {}
+	if doubleName then
+		table.insert(errorMessages, format("Player %s is already set.", doubleName))
+	end
+	if presetNameEmpty then
+		table.insert(errorMessages, "Preset name is empty.")
+	end
+	return errorMessages
+end
+
+function RgoFrameSave_OnClick(self, button)
+	if table.getn(createErrorMessages()) > 0 then
+		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
+		return
+	end
+	local group = createPresetGroupsTable()
 	
 	if(not RgoFrameScrollBar.selection) then
 		RGO:addNewPreset(trimText(RgoPresetNameEditBox:GetText()), group) 
@@ -205,7 +228,6 @@ function RgoFrameSave_OnClick(self, button)
 		RGO:updatePreset(RgoFrameScrollBar.selection.index, trimText(RgoPresetNameEditBox:GetText()), group) 
 	end
 	RgoFrameScrollBar_Update()
-	checkDuplicatePlayers(group)
 end
 
 function trimText(s)
@@ -375,4 +397,32 @@ function RgoFrame_OnEvent(self, event, ...)
 			handleMessage(msg)
 		end
 	end
+end
+
+
+
+local function showTooltip(self)
+	local errorMessages = createErrorMessages()
+	if table.getn(errorMessages) > 0 then
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+		GameTooltip:SetText("Cannot save", 0.7, 0, 1)
+		GameTooltip:AddLine(" ", 1, 1, 1)
+		for k, msg in pairs(errorMessages) do
+			GameTooltip:AddLine(msg, 1, 1, 1)
+			GameTooltip:AddLine(" ", 1, 1, 1)
+		end
+		GameTooltip:Show()
+	end
+end
+
+function RgoFrameSave_OnEnter(self)
+	local group = createPresetGroupsTable()
+	local duplicateName = checkDuplicatePlayers(group)
+	SaveValidationErrors["doubleName"] = duplicateName
+
+	showTooltip(self)
+end
+
+function RgoFrameSave_OnLeave(self)
+	GameTooltip:Hide()
 end
