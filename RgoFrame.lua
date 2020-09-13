@@ -4,6 +4,10 @@ RGO_FRAME_TAB_LIST = {}
 local transmittedGroups = nil
 local transmittedPresetName = nil
 
+--drag&drop helper variables
+local originalPoint = {}
+local dropTarget = nil
+
 function RgoFrame_OnLoad(self)
 	for i = 1, 8 do
 		for j = 1, 5 do
@@ -224,8 +228,99 @@ local function handleMessage(msg)
 	end
 end
 
+local function resetDrag(draggedFrame)
+	draggedFrame:ClearAllPoints()
+	draggedFrame:SetPoint(originalPoint[1],originalPoint[2],originalPoint[3],originalPoint[4],originalPoint[5])
+end
+
+local function trySwap(draggedFrame)
+	if (dropTarget == nil) then
+		return
+	end
+	local parentFrame = draggedFrame:GetParent()
+	local draggedPlayer = trimText(parentFrame:GetText())
+	local targetPlayer = trimText(dropTarget:GetText())
+	local draggedColorR, draggedColorG, draggedColorB = parentFrame:GetTextColor()
+	local targetColorR, targetColorG, targetColorB = dropTarget:GetTextColor()
+	dropTarget:SetText(draggedPlayer)
+	dropTarget:SetTextColor(draggedColorR, draggedColorG, draggedColorB)
+	parentFrame:SetText(targetPlayer)
+	parentFrame:SetTextColor(targetColorR, targetColorG, targetColorB)
+	dropTarget:SetAlpha(1)
+	dropTarget = nil
+end
+
+local function updateDropTarget(draggedFrame)
+	local draggedXOff = draggedFrame:GetLeft()
+	local draggedYOff = draggedFrame:GetTop() - draggedFrame:GetHeight()/ 2
+	
+	for i = 1, 8 do
+		for j = 1, 5 do
+			local editBox = _G["FrameGroup" .. i .. "Player" .. j]
+			local xOff = editBox:GetLeft()
+			local yOff = editBox:GetTop()
+			local width = editBox:GetWidth()
+			local height = editBox:GetHeight() - 2
+			if (draggedXOff > xOff and draggedXOff < (xOff + width) and draggedYOff < yOff and draggedYOff > (yOff - height)) then
+				dropTarget = editBox
+				editBox:SetAlpha(0.5)
+			else
+				editBox:SetAlpha(1)		
+			end
+		end
+	end
+end
+
+local function initDraggableFrame(draggedFrame)
+	local tmpFrame = CreateFrame("Frame", nil, draggedFrame);
+	tmpFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT");
+	tmpFrame:SetPoint("TOPRIGHT", draggedFrame, "TOPLEFT");
+	tmpFrame:SetScript("OnSizeChanged", function(self, w, h)
+		if not draggedFrame.isMoving then
+			return
+		end
+		updateDropTarget(draggedFrame)
+	end);		
+	draggedFrame:SetScript("OnMouseDown", function(self, button)
+		if button == "LeftButton" and not self.isMoving then
+			local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
+			originalPoint = {point, relativeTo, relativePoint, xOfs, yOfs}
+			self:StartMoving();
+			self.isMoving = true;
+		end
+	end)
+	draggedFrame:SetScript("OnMouseUp", function(self, button)
+		if button == "LeftButton" and self.isMoving then
+			trySwap(draggedFrame)
+			resetDrag(draggedFrame)
+			self:StopMovingOrSizing();
+			self:SetUserPlaced(false)
+			self.isMoving = false;
+		end
+	end)
+	draggedFrame:SetScript("OnHide", function(self)
+		if ( self.isMoving ) then
+			resetDrag(draggedFrame)
+			self:StopMovingOrSizing();
+			self.isMoving = false;
+		end
+	end)
+end
+
+local function initDraggableButtons()
+	for i = 1, 8 do
+		for j = 1, 5 do
+			local parentFrame = _G["FrameGroup" .. i .. "Player" .. j]
+			local frame = CreateFrame("Button", "DragAnchor" .. i .. j, parentFrame, "DragAnchorTemplate")
+			initDraggableFrame(frame)
+		end
+	end
+end
+
 function RgoFrame_OnEvent(self, event, ...)
-	if event == "PLAYER_LOGIN" then
+	if event == "ADDON_LOADED" and ... == "RaidGroupOrganizer" then
+		initDraggableButtons()
+	elseif event == "PLAYER_LOGIN" then
 		C_ChatInfo.RegisterAddonMessagePrefix("rgo")
 	elseif event == "CHAT_MSG_ADDON" then
 		local prefix, msg = ...
