@@ -77,7 +77,7 @@
 			</OnEscapePressed>
 			<OnTextChanged>
 				AutoCompleteEditBox_OnTextChanged(self, userInput);
-				RgoFrame_OnTextChanged()
+				RgoFrame_OnTextChanged(self)
 			</OnTextChanged>
 		</Scripts>
 		<FontString inherits="ChatFontNormal"/>
