@@ -325,7 +325,9 @@
 								</Anchors>
 								<Scripts>
 									<OnTextChanged>
-										if(self:GetText() == "") then SavePresetButton:Disable() else SavePresetButton:Enable() end
+										if(trimText(self:GetText()) == "") then
+											SavePresetButton:Disable() else SavePresetButton:Enable()
+										end
 									</OnTextChanged>
 									<OnKeyUp function="RgoFrame_OnKeyUp"/>
 									<OnTabPressed>

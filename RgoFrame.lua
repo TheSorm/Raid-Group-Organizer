@@ -199,10 +199,10 @@ function RgoFrameSave_OnClick(self, button)
 	end
 	
 	if(not RgoFrameScrollBar.selection) then
-		RGO:addNewPreset(RgoPresetNameEditBox:GetText(), group) 
+		RGO:addNewPreset(trimText(RgoPresetNameEditBox:GetText()), group) 
 		RgoFrameScrollBar.selection = {index = RGO:getPresetCount()}
 	else
-		RGO:updatePreset(RgoFrameScrollBar.selection.index, RgoPresetNameEditBox:GetText(), group) 
+		RGO:updatePreset(RgoFrameScrollBar.selection.index, trimText(RgoPresetNameEditBox:GetText()), group) 
 	end
 	RgoFrameScrollBar_Update()
 	checkDuplicatePlayers(group)
