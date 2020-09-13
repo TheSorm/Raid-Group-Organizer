@@ -1,0 +1,15 @@
+## Interface: 11305
+## Title: Raid Group Organizer
+## Author: Thorgeirr
+## Notes: A raid group organizer
+## Version: 0.1
+
+## SavedVariables: RGO_DB
+
+embeds.xml
+
+Core.lua
+
+RgoFrame.xml
+
+

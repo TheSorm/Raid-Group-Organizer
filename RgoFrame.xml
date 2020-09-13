@@ -1,0 +1,500 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="RgoFrame.lua"/>
+	<Button name = "RgoListEntryTemplate" inherits="OptionsListButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="16" />
+		</Size>
+		<Scripts>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				RgoListEntry_OnClick(self, button);
+			</OnClick>
+		</Scripts>
+	</Button>
+	<EditBox name="RgoNameEditBox" letters="77" historyLines="0" autoFocus="false" inherits="AutoCompleteEditBoxTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="135" y="21" />
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+					<Size x="8" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-8" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+					<Size x="130" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+					<Size x="8" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				AutoCompleteEditBox_SetAutoCompleteSource(self, GetAutoCompleteResults, AUTOCOMPLETE_LIST.ALL.include, AUTOCOMPLETE_LIST.ALL.exclude);
+				self.addHighlightedText = true;
+				self.autoCompleteContext = "all";
+			</OnLoad>
+			<OnKeyUp function="RgoFrame_OnKeyUp"/>
+			<OnTabPressed>
+				if ( not AutoCompleteEditBox_OnTabPressed(self) ) then
+					EditBox_HandleTabbing(self, RGO_FRAME_TAB_LIST);
+				end
+			</OnTabPressed>
+			<OnEditFocusLost>
+				AutoCompleteEditBox_OnEditFocusLost(self);
+				EditBox_ClearHighlight(self)
+			</OnEditFocusLost>
+			<OnEnterPressed>
+				if ( not AutoCompleteEditBox_OnEnterPressed(self) ) then
+				end
+			</OnEnterPressed>
+			<OnEscapePressed>
+				if ( not AutoCompleteEditBox_OnEscapePressed(self) ) then
+					EditBox_ClearFocus(self);
+				end
+			</OnEscapePressed>
+			<OnTextChanged>
+				AutoCompleteEditBox_OnTextChanged(self, userInput);
+			</OnTextChanged>
+		</Scripts>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+	<Frame name="RgoGroupFrame" virtual="true">
+		<Size>
+            <AbsDimension x="160" y="110"/>
+        </Size>
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize val="16"/>
+			<TileSize val="32"/>
+			<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
+		</Backdrop>
+		<Scripts>
+			<OnLoad>
+				self:SetBackdropBorderColor(0.5,0.5,0.5);
+			</OnLoad>
+		</Scripts>
+		<Frames>
+			<EditBox name="$parentPlayer1" inherits="RgoNameEditBox">
+				 <Anchors>
+				  <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+					<Offset>
+					  <AbsDimension x="15" y="-7"/>
+					</Offset>
+				   </Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="$parentPlayer2" inherits="RgoNameEditBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer1" relativePoint="BOTTOMLEFT">
+						<Offset>
+						  <AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="$parentPlayer3" inherits="RgoNameEditBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer2" relativePoint="BOTTOMLEFT">
+					<Offset>
+						  <AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="$parentPlayer4" inherits="RgoNameEditBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer3" relativePoint="BOTTOMLEFT">
+					<Offset>
+						  <AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="$parentPlayer5" inherits="RgoNameEditBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer4" relativePoint="BOTTOMLEFT">
+					<Offset>
+						  <AbsDimension x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+		</Frames>
+	</Frame>
+	
+	<Frame name="RgoFrame" toplevel="true" enableMouse="true" enableKeyboard="true" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="525" y="590"/>
+		</Size>
+		<Anchors>
+ 			  <Anchor point="CENTER" relativePoint="CENTER"/>
+ 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="35" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="11" top="12" bottom="10"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="RgoDummyText" inherits="GameFontNormal" hidden="true">
+					<Size>
+						<AbsDimension x="0" y="13"/>
+					</Size>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				
+				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="300" y="68"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentHeaderText" inherits="GameFontNormal" text="Raid Group Organizer">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="RgoFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="RgoFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="8" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="6" bottom="5"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="24"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="24"/>
+					</EdgeSize>
+				</Backdrop>
+			</Button>
+			<Button name="AddPresetButton" inherits="UIPanelButtonTemplate" text="Add">
+				 <Size>
+					<AbsDimension x="70" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="RgoFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="RgoFrameAdd_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="RemovePresetButton" inherits="UIPanelButtonTemplate" text="Remove">
+				 <Size>
+					<AbsDimension x="70" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="RgoFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="92" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="RgoFrameRemove_OnClick"/>
+				</Scripts>
+			</Button>
+			<ScrollFrame name="RgoFrameScrollBar" inherits="OptionsFrameListTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-45"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-358" y="11"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				 <Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" tile="true">
+					<TileSize val="32"/>
+					<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						OptionsList_OnLoad(self, "RgoListEntryTemplate");
+						self.update = RgoFrameScrollBar_Update;
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>	
+			<Frame name = "RgoRaidGoupFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="167" y="-45"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="11"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize val="16"/>
+					<TileSize val="32"/>
+					<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
+				</Backdrop>
+				<Frames>
+					<Frame>
+						<Size>
+							<AbsDimension x="150" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="RgoRaidGoupFrame" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>		
+						<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize val="16"/>
+							<TileSize val="32"/>
+							<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
+						</Backdrop>
+						<Frames>
+							<EditBox name="RgoPresetNameEditBox" autoFocus="false" inherits="InputBoxScriptTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="8" y="0"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="-8" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnTextChanged>
+										if(self:GetText() == "") then SavePresetButton:Disable() else SavePresetButton:Enable() end
+									</OnTextChanged>
+									<OnKeyUp function="RgoFrame_OnKeyUp"/>
+									<OnTabPressed>
+										 FrameGroup1Player1:SetFocus() 
+									</OnTabPressed>
+								</Scripts>
+								<FontString inherits="ChatFontNormal"/>
+							</EditBox>
+						</Frames>
+					</Frame>
+					<Frame name="FrameGroup7" inherits="RgoGroupFrame">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="RgoRaidGoupFrame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="10" y="31"/>
+								</Offset>
+							</Anchor>
+						</Anchors>	
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" text="Group 7" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="FrameGroup5" inherits="RgoGroupFrame">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="FrameGroup7" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="13"/>
+								</Offset>
+							</Anchor>
+						</Anchors>	
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" text="Group 5" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="FrameGroup3" inherits="RgoGroupFrame">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="FrameGroup5" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="13"/>
+								</Offset>
+							</Anchor>
+						</Anchors>	
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" text="Group 3" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="FrameGroup1" inherits="RgoGroupFrame">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="FrameGroup3" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="13"/>
+								</Offset>
+							</Anchor>
+						</Anchors>	
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" text="Group 1" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="FrameGroup8" inherits="RgoGroupFrame">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="RgoRaidGoupFrame" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-10" y="31"/>
+								</Offset>
+							</Anchor>
+						</Anchors>	
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" text="Group 8" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="FrameGroup6" inherits="RgoGroupFrame">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="FrameGroup8" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="13"/>
+								</Offset>
+							</Anchor>
+						</Anchors>	
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" text="Group 6" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="FrameGroup4" inherits="RgoGroupFrame">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="FrameGroup6" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="13"/>
+								</Offset>
+							</Anchor>
+						</Anchors>	
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" text="Group 4" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="FrameGroup2" inherits="RgoGroupFrame">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="FrameGroup4" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="13"/>
+								</Offset>
+							</Anchor>
+						</Anchors>	
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" text="Group 2" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Button name="SavePresetButton" inherits="UIPanelButtonTemplate" text="Save">
+						 <Size>
+							<AbsDimension x="70" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="RgoRaidGoupFrame" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-10" y="9"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick function="RgoFrameSave_OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				tinsert(UISpecialFrames, self:GetName())
+				RgoFrame_OnLoad()
+			</OnLoad>
+			<OnKeyUp function="RgoFrame_OnKeyUp"/>
+			<OnShow function="RgoFrame_OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>
