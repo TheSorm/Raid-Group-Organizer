@@ -8,6 +8,72 @@ local transmittedPresetName = nil
 local originalPoint = {}
 local dropTarget = nil
 
+local function visitPlayerInfos(visitNameAndClass)
+	local numTotal = GetNumGuildMembers();
+	for i = 1, numTotal do
+		local name, _, _, _, _, _, _, _, _, _, classFileName = GetGuildRosterInfo(i);
+		name = string.match(name, "(.+)-.+") --remove server name
+		visitNameAndClass(name, classFileName)
+	end
+end
+
+local function setColor(name, className, players, markedPlayers)
+	for parentFrame, playerName in pairs(players) do
+		if playerName == name then
+			table.insert(markedPlayers, parentFrame)
+			if className == "WARRIOR" then
+				parentFrame:SetTextColor(0.78,0.61,0.43)
+			elseif className == "MAGE" then
+				parentFrame:SetTextColor(0.25,0.78,0.92)
+			elseif className == "DRUID" then
+				parentFrame:SetTextColor(1,0.49,0.04)
+			elseif className == "PALADIN" then
+				parentFrame:SetTextColor(0.96,0.55,0.73)
+			elseif className == "WARLOCK" then
+				parentFrame:SetTextColor(0.53,0.53,0.93)
+			elseif className == "PRIEST" then
+				parentFrame:SetTextColor(1,1,1)
+			elseif className == "SHAMAN" then
+				parentFrame:SetTextColor(0,0.44,0.87)
+			elseif className == "ROGUE" then
+				parentFrame:SetTextColor(1,0.96,0.41)
+			end
+		end
+	end
+end
+
+function RgoFrame_OnTextChanged()
+	local players = {}
+	for i = 1, 8 do
+		for j = 1, 5 do
+			local parentFrame = _G["FrameGroup" .. i .. "Player" .. j]
+			local playerName = trimText(parentFrame:GetText())
+			if playerName ~= "" then
+				players[parentFrame] = playerName
+			end
+		end
+	end
+	local markedPlayers = {}
+	visitPlayerInfos(
+		function(name, className)
+			setColor(name, className, players, markedPlayers)
+		end
+	)	
+
+	for parentFrame, playerName in pairs(players) do
+		local found = false
+		for k, markedParentFrame in pairs(markedPlayers) do
+			if (parentFrame == markedParentFrame) then
+				found = true
+				break
+			end
+		end
+		if not found then
+			parentFrame:SetTextColor(1,0,0)
+		end
+	end
+end
+
 function RgoFrame_OnLoad(self)
 	for i = 1, 8 do
 		for j = 1, 5 do
