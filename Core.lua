@@ -41,11 +41,39 @@ function RGO:CreatePresetDropdownInRaidFrame()
 	UIDropDownMenu_Initialize(self.presetDropDown, RgoDropDownMenu_Initialize)
 end
 
+function RGO:PrintMissingPlayers(index)
+	local sortedGRP = self.db.realm.presetIndexToGroupStructure[index]
+	local indexToName = {}
+	local nameToIndex = {}
+	
+	for i = 1, 40 do
+		indexToName[i] = GetRaidRosterInfo(i)
+		if(indexToName[i] ~= nil) then
+			nameToIndex[indexToName[i]] = i
+		end
+	end  
+
+	local missinPlayers = {}
+	for i = 1, 8 do	
+		for j = 1, 5 do
+			local currentIndex = (i - 1) * 5 + j 
+			if(nameToIndex[sortedGRP[currentIndex]] == nil) then
+				local missingPlayer = sortedGRP[currentIndex]
+				table.insert(missinPlayers, missingPlayer)
+			end
+		end
+	end
+	if (table.getn(missinPlayers) > 0) then
+		DEFAULT_CHAT_FRAME:AddMessage("Missing preset players: " .. table.concat(missinPlayers, ", " ), 1.0, 0.0, 0.0);
+	end
+end
+
 function RgoDropDownMenu_Initialize (frame, level, menuList)
-	local function presetDropDown_OnClick(frame, arg1, arg2, checked)
-		if (not RGO:sortGroup(arg1)) then
+	local function presetDropDown_OnClick(frame, index, arg2, checked)
+		if (not RGO:sortGroup(index)) then
 			UIDropDownMenu_SetSelectedValue(RGO.presetDropDown, frame.value);
 		end
+		RGO:PrintMissingPlayers(index)
 	end
 	
 	local info = UIDropDownMenu_CreateInfo()
