@@ -405,7 +405,7 @@ local function showTooltip(self)
 	local errorMessages = createErrorMessages()
 	if table.getn(errorMessages) > 0 then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-		GameTooltip:SetText("Cannot save", 0.7, 0, 1)
+		GameTooltip:SetText("Cannot save", 1, 0, 0)
 		GameTooltip:AddLine(" ", 1, 1, 1)
 		for k, msg in pairs(errorMessages) do
 			GameTooltip:AddLine(msg, 1, 1, 1)
