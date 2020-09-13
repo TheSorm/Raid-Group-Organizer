@@ -140,6 +140,17 @@ function RgoFrame_OnKeyUp(self, key)
 	end
 end
 
+local function checkDuplicatePlayers(group)
+	for i=1, 40 do
+		for j=i + 1, 40 do
+			if group[i] ~= nil and group[i] == group[j] then
+				message(format("Player %s is set multiple times", group[i]))
+				return
+			end
+		end
+	end
+end
+
 function RgoFrameSave_OnClick(self, button)
 	local group = {}
 	for i = 1, 8 do
@@ -159,6 +170,7 @@ function RgoFrameSave_OnClick(self, button)
 		RGO:updatePreset(RgoFrameScrollBar.selection.index, RgoPresetNameEditBox:GetText(), group) 
 	end
 	RgoFrameScrollBar_Update()
+	checkDuplicatePlayers(group)
 end
 
 function trimText(s)
