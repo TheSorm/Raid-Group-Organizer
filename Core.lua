@@ -101,8 +101,8 @@ function RGO:ProcessQueuedSorting()
 	if(queuedSorting ~= nil) then
 		RGO:sortGroup(queuedSorting)
 		UIDropDownMenu_SetSelectedValue(RGO.presetDropDown, nil);
+		RGO:PrintMissingPlayers(queuedSorting)
 		queuedSorting = nil
-		RGO:PrintMissingPlayers(index)
 	end
 end
 
