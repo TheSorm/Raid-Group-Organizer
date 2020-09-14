@@ -22,7 +22,7 @@ function RGO:OnInitialize()
 	RGO:RegisterEvent("PLAYER_ROLES_ASSIGNED", "UpdateDropdownVisibility")
 	RGO:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateDropdownVisibility")
 	RGO:RegisterEvent("PLAYER_REGEN_ENABLED", "ProcessQueuedSorting")
-	RGO:RegisterEvent("ADDON_LOADED", "HandleAddonLoadedEvent")
+	
 	
 	RGO:RegisterComm("rgo", "HandleAddonMessage")
 	
@@ -267,3 +267,5 @@ function RGO_Console:CreateRGOWindow(input)
     end
 end
 
+--this outside of OnInitialize now because it will trigger for the own addon otherwise
+RGO:RegisterEvent("ADDON_LOADED", "HandleAddonLoadedEvent")

@@ -259,16 +259,19 @@ function RgoFrameShare_OnClick(self, button)
 	print("done")
 end
 
-local function resetDrag(draggedFrame)
+local function resetDrag(draggedFrame, fontString)
 	draggedFrame:ClearAllPoints()
 	draggedFrame:SetPoint(originalPoint[1],originalPoint[2],originalPoint[3],originalPoint[4],originalPoint[5])
+	fontString:SetText("")
 end
 
 local function trySwap(draggedFrame)
+	local parentFrame = draggedFrame:GetParent()
+	parentFrame:SetAlpha(1)
 	if (dropTarget == nil) then
 		return
 	end
-	local parentFrame = draggedFrame:GetParent()
+	
 	local draggedPlayer = RGO:TrimText(parentFrame:GetText())
 	local targetPlayer = RGO:TrimText(dropTarget:GetText())
 	local draggedColorR, draggedColorG, draggedColorB = parentFrame:GetTextColor()
@@ -278,6 +281,7 @@ local function trySwap(draggedFrame)
 	parentFrame:SetText(targetPlayer)
 	parentFrame:SetTextColor(targetColorR, targetColorG, targetColorB)
 	dropTarget:SetAlpha(1)
+	
 	dropTarget = nil
 end
 
@@ -292,17 +296,19 @@ local function updateDropTarget(draggedFrame)
 			local yOff = editBox:GetTop()
 			local width = editBox:GetWidth()
 			local height = editBox:GetHeight() - 2
-			if (draggedXOff > xOff and draggedXOff < (xOff + width) and draggedYOff < yOff and draggedYOff > (yOff - height)) then
-				dropTarget = editBox
-				editBox:SetAlpha(0.5)
-			else
-				editBox:SetAlpha(1)		
+			if editBox ~= draggedFrame:GetParent() then			
+				if (draggedXOff > xOff and draggedXOff < (xOff + width) and draggedYOff < yOff and draggedYOff > (yOff - height)) then
+					dropTarget = editBox
+					editBox:SetAlpha(0.5)
+				else
+					editBox:SetAlpha(1)		
+				end
 			end
 		end
 	end
 end
 
-local function initDraggableFrame(draggedFrame)
+local function initDraggableFrame(draggedFrame, fontString)
 	local tmpFrame = CreateFrame("Frame", nil, draggedFrame);
 	tmpFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT");
 	tmpFrame:SetPoint("TOPRIGHT", draggedFrame, "TOPLEFT");
@@ -316,6 +322,11 @@ local function initDraggableFrame(draggedFrame)
 		if button == "LeftButton" and not self.isMoving then
 			local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
 			originalPoint = {point, relativeTo, relativePoint, xOfs, yOfs}
+			fontString:SetText(draggedFrame:GetParent():GetText())
+			fontString:SetTextColor(draggedFrame:GetParent():GetTextColor())
+			draggedFrame:GetParent():SetAlpha(0)
+			draggedFrame:SetIgnoreParentAlpha(true)
+			fontString:SetIgnoreParentAlpha(true)
 			self:StartMoving();
 			self.isMoving = true;
 		end
@@ -323,7 +334,7 @@ local function initDraggableFrame(draggedFrame)
 	draggedFrame:SetScript("OnMouseUp", function(self, button)
 		if button == "LeftButton" and self.isMoving then
 			trySwap(draggedFrame)
-			resetDrag(draggedFrame)
+			resetDrag(draggedFrame, fontString)
 			self:StopMovingOrSizing();
 			self:SetUserPlaced(false)
 			self.isMoving = false;
@@ -331,7 +342,7 @@ local function initDraggableFrame(draggedFrame)
 	end)
 	draggedFrame:SetScript("OnHide", function(self)
 		if ( self.isMoving ) then
-			resetDrag(draggedFrame)
+			resetDrag(draggedFrame, fontString)
 			self:StopMovingOrSizing();
 			self.isMoving = false;
 		end
@@ -342,8 +353,11 @@ function RGO:InitDraggableButtons()
 	for i = 1, 8 do
 		for j = 1, 5 do
 			local parentFrame = _G["FrameGroup" .. i .. "Player" .. j]
-			local frame = CreateFrame("Button", "DragAnchor" .. i .. j, parentFrame, "DragAnchorTemplate")
-			initDraggableFrame(frame)
+			local button = CreateFrame("Button", "DragAnchor" .. i .. j, parentFrame, "DragAnchorTemplate")
+			local fontString = button:CreateFontString("DragFontString"..i..j, "OVERLAY")
+			fontString:SetFont(parentFrame:GetFont())
+			fontString:SetPoint("LEFT",button,"LEFT",-122, 0)
+			initDraggableFrame(button, fontString)
 		end
 	end
 end
