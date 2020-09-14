@@ -227,7 +227,7 @@ function RgoFrameSave_OnClick(self, button)
 end
 
 local function sendMessage(msg, target)
-  C_ChatInfo.SendAddonMessage("rgo", msg, "WHISPER", target);
+	RGO:SendCommMessage("rgo", msg, "WHISPER", target)
 end
 
 function RgoFrameShare_OnClick(self, button)

@@ -1,4 +1,4 @@
-RGO = LibStub("AceAddon-3.0"):NewAddon("RGO", "AceEvent-3.0")
+RGO = LibStub("AceAddon-3.0"):NewAddon("RGO", "AceEvent-3.0", "AceComm-3.0")
 RGO_Console = LibStub("AceConsole-3.0")
 
 --transmitting preset helper variables
@@ -23,9 +23,9 @@ function RGO:OnInitialize()
 	RGO:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateDropdownVisibility")
 	RGO:RegisterEvent("PLAYER_REGEN_ENABLED", "ProcessQueuedSorting")
 	RGO:RegisterEvent("ADDON_LOADED", "HandleAddonLoadedEvent")
-	RGO:RegisterEvent("PLAYER_LOGIN", "HandlePlayerLoginEvent")
-	RGO:RegisterEvent("CHAT_MSG_ADDON", "HandleChatMsgAddonEvent")
-
+	
+	RGO:RegisterComm("rgo", "HandleAddonMessage")
+	
 	RGO:CreatePresetDropdownInRaidFrame() 
 	
 	RGO:UpdateDropdownVisibility() 
@@ -41,7 +41,7 @@ function RGO:TrimText(s)
    return s:match "^%s*(.-)%s*$"
 end
 
-function RGO:HandleAddonMessage(msg)
+function RGO:HandleAddonMessage(prefix, msg, distribution, sender)
 	if(msg == "end_transmission") then
 		for key,value in pairs(transmittedGroups) do
 			if value == "" then
@@ -74,17 +74,6 @@ end
 function RGO:HandleAddonLoadedEvent(event, arg1)
 	if arg1 == "RaidGroupOrganizer" then
 		RGO:InitDraggableButtons()
-	end
-end
-
-function RGO:HandlePlayerLoginEvent()
-	C_ChatInfo.RegisterAddonMessagePrefix("rgo")
-end
-
-function RGO:HandleChatMsgAddonEvent(event, ...)
-	local prefix, msg = ...
-	if prefix == "rgo" then
-		RGO:HandleAddonMessage(msg)
 	end
 end
 
