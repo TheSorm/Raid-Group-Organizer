@@ -527,7 +527,7 @@
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="ShareEditBox" relativePoint="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="0" y="0"/>
+									<AbsDimension x="5" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
