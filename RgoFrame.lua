@@ -1,9 +1,5 @@
 RGO_FRAME_TAB_LIST = {}
 
---transmitting preset helper variables
-local transmittedGroups = nil
-local transmittedPresetName = nil
-
 --drag&drop helper variables
 local originalPoint = {}
 local dropTarget = nil
@@ -22,7 +18,7 @@ local function visitPlayerInfos(visitNameAndClass)
 end
 
 function RgoFrame_OnTextChanged(editBox)
-	local playerName = trimText(editBox:GetText())
+	local playerName = RGO:TrimText(editBox:GetText())
 	if playerName == "" then
 		editBox:SetTextColor(1, 1, 1) --white cursor blinking
 		return
@@ -222,16 +218,12 @@ function RgoFrameSave_OnClick(self, button)
 	local group = createPresetGroupsTable()
 	
 	if(not RgoFrameScrollBar.selection) then
-		RGO:addNewPreset(trimText(RgoPresetNameEditBox:GetText()), group) 
+		RGO:addNewPreset(RGO:TrimText(RgoPresetNameEditBox:GetText()), group) 
 		RgoFrameScrollBar.selection = {index = RGO:getPresetCount()}
 	else
-		RGO:updatePreset(RgoFrameScrollBar.selection.index, trimText(RgoPresetNameEditBox:GetText()), group) 
+		RGO:updatePreset(RgoFrameScrollBar.selection.index, RGO:TrimText(RgoPresetNameEditBox:GetText()), group) 
 	end
 	RgoFrameScrollBar_Update()
-end
-
-function trimText(s)
-   return s:match "^%s*(.-)%s*$"
 end
 
 local function sendMessage(msg, target)
@@ -239,11 +231,11 @@ local function sendMessage(msg, target)
 end
 
 function RgoFrameShare_OnClick(self, button)
-	local target = trimText(ShareEditBox:GetText())
+	local target = RGO:TrimText(ShareEditBox:GetText())
 	if (target == "") then
 		return
 	end
-	local presetName = trimText(RgoPresetNameEditBox:GetText())
+	local presetName = RGO:TrimText(RgoPresetNameEditBox:GetText())
 	if presetName == "" then
 		presetName = "unnamed"
 	end
@@ -252,7 +244,7 @@ function RgoFrameShare_OnClick(self, button)
 	for i = 1, 8 do
 		local message = ""
 		for j = 1, 5 do
-			local playerName = trimText(getglobal("FrameGroup".. i .."Player" .. j):GetText())
+			local playerName = RGO:TrimText(getglobal("FrameGroup".. i .."Player" .. j):GetText())
 			if(playerName == "") then
 				playerName = "[]"
 			end
@@ -267,36 +259,6 @@ function RgoFrameShare_OnClick(self, button)
 	print("done")
 end
 
-local function handleMessage(msg)
-	if(msg == "end_transmission") then
-		for key,value in pairs(transmittedGroups) do
-			if value == "" then
-				transmittedGroups[key] = nil
-			end
-		end
-		RGO:addNewPreset(transmittedPresetName, transmittedGroups) 
-		RgoFrameScrollBar_Update()
-		
-		transmittedGroups = nil
-		transmittedPresetName = nil
-		print("done.")
-	else
-		local presetName = string.match(msg, "start_transmission (.+)")
-		if (presetName == nil) then
-			for playerName in string.gmatch(msg, "([^,]+)") do
-				if (playerName == "[]") then
-					playerName = ""
-				end
-				table.insert(transmittedGroups, playerName)
-			end
-		else
-			transmittedPresetName = presetName
-			transmittedGroups = {}
-			print("Receiving Raid Group Organizer preset: " .. presetName)
-		end
-	end
-end
-
 local function resetDrag(draggedFrame)
 	draggedFrame:ClearAllPoints()
 	draggedFrame:SetPoint(originalPoint[1],originalPoint[2],originalPoint[3],originalPoint[4],originalPoint[5])
@@ -307,8 +269,8 @@ local function trySwap(draggedFrame)
 		return
 	end
 	local parentFrame = draggedFrame:GetParent()
-	local draggedPlayer = trimText(parentFrame:GetText())
-	local targetPlayer = trimText(dropTarget:GetText())
+	local draggedPlayer = RGO:TrimText(parentFrame:GetText())
+	local targetPlayer = RGO:TrimText(dropTarget:GetText())
 	local draggedColorR, draggedColorG, draggedColorB = parentFrame:GetTextColor()
 	local targetColorR, targetColorG, targetColorB = dropTarget:GetTextColor()
 	dropTarget:SetText(draggedPlayer)
@@ -376,7 +338,7 @@ local function initDraggableFrame(draggedFrame)
 	end)
 end
 
-local function initDraggableButtons()
+function RGO:InitDraggableButtons()
 	for i = 1, 8 do
 		for j = 1, 5 do
 			local parentFrame = _G["FrameGroup" .. i .. "Player" .. j]
@@ -385,21 +347,6 @@ local function initDraggableButtons()
 		end
 	end
 end
-
-function RgoFrame_OnEvent(self, event, ...)
-	if event == "ADDON_LOADED" and ... == "RaidGroupOrganizer" then
-		initDraggableButtons()
-	elseif event == "PLAYER_LOGIN" then
-		C_ChatInfo.RegisterAddonMessagePrefix("rgo")
-	elseif event == "CHAT_MSG_ADDON" then
-		local prefix, msg = ...
-		if prefix == "rgo" then
-			handleMessage(msg)
-		end
-	end
-end
-
-
 
 local function showTooltip(self)
 	local errorMessages = createErrorMessages()

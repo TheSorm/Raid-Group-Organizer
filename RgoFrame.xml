@@ -325,7 +325,7 @@
 								</Anchors>
 								<Scripts>
 									<OnTextChanged>
-										if(trimText(self:GetText()) == "") then
+										if(RGO:TrimText(self:GetText()) == "") then
 											SaveValidationErrors["presetNameEmpty"] = true
 										else
 											SaveValidationErrors["presetNameEmpty"] = false
@@ -511,7 +511,7 @@
 						</Anchors>
 						<Scripts>
 							<OnTextChanged>
-								local text = trimText(self:GetText())
+								local text = RGO:TrimText(self:GetText())
 								if(text == "") then
 									ShareButton:Disable()
 								else
@@ -539,11 +539,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnEvent function="RgoFrame_OnEvent"/>
 			<OnLoad>
-				self:RegisterEvent("ADDON_LOADED")
-				self:RegisterEvent("PLAYER_LOGIN")
-				self:RegisterEvent("CHAT_MSG_ADDON")
 				tinsert(UISpecialFrames, self:GetName())
 				RgoFrame_OnLoad()
 			</OnLoad>

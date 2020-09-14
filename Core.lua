@@ -1,6 +1,10 @@
 RGO = LibStub("AceAddon-3.0"):NewAddon("RGO", "AceEvent-3.0")
 RGO_Console = LibStub("AceConsole-3.0")
 
+--transmitting preset helper variables
+local transmittedGroups = nil
+local transmittedPresetName = nil
+
 function RGO:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("RGO_DB")
 	
@@ -18,6 +22,9 @@ function RGO:OnInitialize()
 	RGO:RegisterEvent("PLAYER_ROLES_ASSIGNED", "UpdateDropdownVisibility")
 	RGO:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateDropdownVisibility")
 	RGO:RegisterEvent("PLAYER_REGEN_ENABLED", "ProcessQueuedSorting")
+	RGO:RegisterEvent("ADDON_LOADED", "HandleAddonLoadedEvent")
+	RGO:RegisterEvent("PLAYER_LOGIN", "HandlePlayerLoginEvent")
+	RGO:RegisterEvent("CHAT_MSG_ADDON", "HandleChatMsgAddonEvent")
 
 	RGO:CreatePresetDropdownInRaidFrame() 
 	
@@ -28,6 +35,57 @@ function RGO:OnEnable()
 end
 
 function RGO:OnDisable()
+end
+
+function RGO:TrimText(s)
+   return s:match "^%s*(.-)%s*$"
+end
+
+function RGO:HandleAddonMessage(msg)
+	if(msg == "end_transmission") then
+		for key,value in pairs(transmittedGroups) do
+			if value == "" then
+				transmittedGroups[key] = nil
+			end
+		end
+		RGO:addNewPreset(transmittedPresetName, transmittedGroups) 
+		RgoFrameScrollBar_Update()
+		
+		transmittedGroups = nil
+		transmittedPresetName = nil
+		print("done.")
+	else
+		local presetName = string.match(msg, "start_transmission (.+)")
+		if (presetName == nil) then
+			for playerName in string.gmatch(msg, "([^,]+)") do
+				if (playerName == "[]") then
+					playerName = ""
+				end
+				table.insert(transmittedGroups, playerName)
+			end
+		else
+			transmittedPresetName = presetName
+			transmittedGroups = {}
+			print("Receiving Raid Group Organizer preset: " .. presetName)
+		end
+	end
+end
+
+function RGO:HandleAddonLoadedEvent(event, arg1)
+	if arg1 == "RaidGroupOrganizer" then
+		RGO:InitDraggableButtons()
+	end
+end
+
+function RGO:HandlePlayerLoginEvent()
+	C_ChatInfo.RegisterAddonMessagePrefix("rgo")
+end
+
+function RGO:HandleChatMsgAddonEvent(event, ...)
+	local prefix, msg = ...
+	if prefix == "rgo" then
+		RGO:HandleAddonMessage(msg)
+	end
 end
 
 function RGO:CreatePresetDropdownInRaidFrame() 
