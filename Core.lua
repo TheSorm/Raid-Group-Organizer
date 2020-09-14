@@ -72,8 +72,9 @@ function RgoDropDownMenu_Initialize (frame, level, menuList)
 	local function presetDropDown_OnClick(frame, index, arg2, checked)
 		if (not RGO:sortGroup(index)) then
 			UIDropDownMenu_SetSelectedValue(RGO.presetDropDown, frame.value);
+		else
+			RGO:PrintMissingPlayers(index)
 		end
-		RGO:PrintMissingPlayers(index)
 	end
 	
 	local info = UIDropDownMenu_CreateInfo()
@@ -101,6 +102,7 @@ function RGO:ProcessQueuedSorting()
 		RGO:sortGroup(queuedSorting)
 		UIDropDownMenu_SetSelectedValue(RGO.presetDropDown, nil);
 		queuedSorting = nil
+		RGO:PrintMissingPlayers(index)
 	end
 end
 
