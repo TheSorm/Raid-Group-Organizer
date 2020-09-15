@@ -41,6 +41,48 @@ function RgoFrame_OnTextChanged(editBox)
 	end
 end
 
+function RgoPresetOptionMenu_OnLoad()
+	local info = UIDropDownMenu_CreateInfo()
+   
+	info.text = "Options"
+    info.isTitle  = true
+	info.notCheckable = true
+	UIDropDownMenu_AddButton(info)
+	
+	info = UIDropDownMenu_CreateInfo()
+   
+	info.text = "Duplicate"
+	info.func = RgoOpenCurrentPresetAsNew
+    info.notCheckable = true
+	UIDropDownMenu_AddButton(info)
+	
+	info.text = "Import Raid"
+	info.func = RgoImportRaidIntoUI
+    info.notCheckable = true
+	UIDropDownMenu_AddButton(info)
+end
+
+function RgoImportRaidIntoUI()
+	if not UnitInRaid("player") then
+		return
+	end
+
+	group = RGO:getCurrentRaidSetup()
+	for i = 1, 8 do
+		for j = 1, 5 do
+			local playerName = group[(i - 1) * 5 + j]
+			if(playerName == nil) then
+				playerName = "" 
+			end
+			getglobal("FrameGroup".. i .."Player" .. j):SetText(playerName)
+		end
+	end
+end
+
+function RgoPresetOptionMenuButton_OnClick() 
+    ToggleDropDownMenu(1, nil, RgoPresetOptionMenu, RgoPresetOptionMenuButton, 0, 0);
+end
+
 function RgoFrame_OnLoad(self)
 	for i = 1, 8 do
 		for j = 1, 5 do
@@ -153,24 +195,22 @@ function RgoFrameRemove_OnClick(self, button)
 	end
 end
 
-function RgoFrame_OnKeyUp(self, key)
-	if(IsControlKeyDown() and key == "D" and RgoFrameScrollBar.selection) then
-		RgoPresetNameEditBox:SetText("")
-		group =  RGO:getPresetGroup(RgoFrameScrollBar.selection.index)
-		for i = 1, 8 do
-			for j = 1, 5 do
-				local playerName = group[(i - 1) * 5 + j]
-				if(playerName == nil) then
-					playerName = "" 
-				end
-				getglobal("FrameGroup".. i .."Player" .. j):SetText(playerName)
+function RgoOpenCurrentPresetAsNew()
+	RgoPresetNameEditBox:SetText("")
+	group =  RGO:getPresetGroup(RgoFrameScrollBar.selection.index)
+	for i = 1, 8 do
+		for j = 1, 5 do
+			local playerName = group[(i - 1) * 5 + j]
+			if(playerName == nil) then
+				playerName = "" 
 			end
+			getglobal("FrameGroup".. i .."Player" .. j):SetText(playerName)
 		end
-		RgoPresetNameEditBox:SetFocus() 
-
-		RgoClearSelection(RgoFrameScrollBar, RgoFrameScrollBar.buttons);
-		RgoRaidGoupFrame:Show()
 	end
+	RgoPresetNameEditBox:SetFocus() 
+
+	RgoClearSelection(RgoFrameScrollBar, RgoFrameScrollBar.buttons);
+	RgoRaidGoupFrame:Show()
 end
 
 local function checkDuplicatePlayers(group)

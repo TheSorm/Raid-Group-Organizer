@@ -340,6 +340,66 @@
 							</EditBox>
 						</Frames>
 					</Frame>
+					<Button name="RgoPresetOptionMenuButton">
+						 <Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="RgoRaidGoupFrame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-4" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+							<Size>
+								<AbsDimension x="24" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</NormalTexture>
+						<PushedTexture name="$parentPushedTexture" parentKey="PushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
+							<Size>
+								<AbsDimension x="24" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</PushedTexture>
+						<DisabledTexture name="$parentDisabledTexture" parentKey="DisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+							<Size>
+								<AbsDimension x="24" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</DisabledTexture>
+						<HighlightTexture name="$parentHighlightTexture" parentKey="HighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="24" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</HighlightTexture>
+					   <Scripts>
+							<OnClick>
+								RgoPresetOptionMenuButton_OnClick();
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+							</OnClick>
+						    <OnLoad>
+								UIDropDownMenu_Initialize(self, RgoPresetOptionMenu_OnLoad);
+							</OnLoad>
+					   </Scripts>
+				   </Button>
+				    <Frame name="RgoPresetOptionMenu" inherits="UIDropDownMenuTemplate" id="1">
+					   <Scripts>
+						   <OnLoad>
+							   UIDropDownMenu_Initialize(self, RgoPresetOptionMenu_OnLoad, "MENU");
+						   </OnLoad>
+					   </Scripts>
+				   </Frame>
 					<Frame name="FrameGroup7" inherits="RgoGroupFrame">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="RgoRaidGoupFrame" relativePoint="BOTTOMLEFT">
@@ -543,7 +603,6 @@
 				tinsert(UISpecialFrames, self:GetName())
 				RgoFrame_OnLoad()
 			</OnLoad>
-			<OnKeyUp function="RgoFrame_OnKeyUp"/>
 			<OnShow function="RgoFrame_OnShow"/>
 		</Scripts>
 	</Frame>

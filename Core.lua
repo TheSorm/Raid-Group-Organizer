@@ -189,6 +189,34 @@ function RGO:getPresetGroup(index)
 	return self.db.realm.presetIndexToGroupStructure[index]
 end
 
+function RGO:getCurrentRaidSetup()
+	local raidGroupStructure = {}
+	local raidGroup = {}
+
+	for i = 1, 40 do
+		name, _, subGrp = GetRaidRosterInfo(i)
+		if(name ~= nil) then
+			if(raidGroupStructure[subGrp] == nil) then
+				raidGroupStructure[subGrp] = {}
+			end
+			table.insert(raidGroupStructure[subGrp], name)
+		end
+	end  
+	
+	for i = 1, 8 do	
+		for j = 1, 5 do
+			local index = (i - 1) * 5 + j 
+			if(raidGroupStructure[i] == nil) then
+				raidGroup[index] = nil
+			else
+				raidGroup[index] = raidGroupStructure[i][j]
+			end
+		end
+	end
+	
+	return raidGroup
+end
+
 function RGO:sortGroup(index)
 
 	if(InCombatLockdown()) then
