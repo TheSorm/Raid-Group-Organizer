@@ -330,7 +330,6 @@
 											SaveValidationErrors["presetNameEmpty"] = false
 										end
 									</OnTextChanged>
-									<OnKeyUp function="RgoFrame_OnKeyUp"/>
 									<OnTabPressed>
 										 FrameGroup1Player1:SetFocus() 
 									</OnTabPressed>
