@@ -196,6 +196,10 @@ function RgoFrameRemove_OnClick(self, button)
 end
 
 function RgoOpenCurrentPresetAsNew()
+	if(not RgoFrameScrollBar.selection) then
+		return
+	end
+	
 	RgoPresetNameEditBox:SetText("")
 	group =  RGO:getPresetGroup(RgoFrameScrollBar.selection.index)
 	for i = 1, 8 do
