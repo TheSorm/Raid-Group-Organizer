@@ -56,7 +56,6 @@
 				self.addHighlightedText = true;
 				self.autoCompleteContext = "all";
 			</OnLoad>
-			<OnKeyUp function="RgoFrame_OnKeyUp"/>
 			<OnTabPressed>
 				if ( not AutoCompleteEditBox_OnTabPressed(self) ) then
 					EditBox_HandleTabbing(self, RGO_FRAME_TAB_LIST);
