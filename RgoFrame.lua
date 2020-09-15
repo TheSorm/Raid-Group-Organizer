@@ -378,17 +378,17 @@ local function initDraggableFrame(draggedFrame, fontString)
 	draggedFrame:SetScript("OnMouseUp", function(self, button)
 		if button == "LeftButton" and self.isMoving then
 			trySwap(draggedFrame)
-			resetDrag(draggedFrame, fontString)
 			self:StopMovingOrSizing();
 			self:SetUserPlaced(false)
 			self.isMoving = false;
+			resetDrag(draggedFrame, fontString)
 		end
 	end)
 	draggedFrame:SetScript("OnHide", function(self)
 		if ( self.isMoving ) then
-			resetDrag(draggedFrame, fontString)
 			self:StopMovingOrSizing();
 			self.isMoving = false;
+			resetDrag(draggedFrame, fontString)
 		end
 	end)
 end

@@ -600,7 +600,10 @@
 			<OnLoad>
 				tinsert(UISpecialFrames, self:GetName())
 				RgoFrame_OnLoad()
+				self:RegisterForDrag("LeftButton");
 			</OnLoad>
+			<OnDragStart>self:StartMoving();</OnDragStart>
+			<OnDragStop>self:StopMovingOrSizing();</OnDragStop>
 			<OnShow function="RgoFrame_OnShow"/>
 		</Scripts>
 	</Frame>
