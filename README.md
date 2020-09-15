@@ -12,15 +12,10 @@
 ## Further Features
 
 - Use Ctrl+D in the preset window to duplicate the currently selected preset
--
 - Auto complete feature for the names in the presets (Like the one in the mail frame)
--
 - When in combat, the group sorting will be queued and executed after the combat ends
--
 - Class colors are shown for players that are in the same guild as you
--
 - Presets can be shared to other players by writing the player name of the person to share to into the edit box at the bottom of the preset and than clicking the share button
-
 - When the group is sorted and players are mssing from the preset, you will receive a massage in the chat
 
 ## Roadmap
