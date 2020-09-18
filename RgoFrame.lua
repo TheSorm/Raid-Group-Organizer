@@ -61,6 +61,7 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", modifyChatMessage)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", modifyChatMessage)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", modifyChatMessage)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_OFFICER", modifyChatMessage)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", modifyChatMessage)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", modifyChatMessage)
 
 local function visitPlayerInfos(visitNameAndClass)
