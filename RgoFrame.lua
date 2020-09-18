@@ -218,6 +218,13 @@ function RgoListEntry_OnClick (self, mouseButton)
 	RgoClearSelection(RgoFrameScrollBar, RgoFrameScrollBar.buttons);
 	RgoSelectButton(parent, self);
 	
+	if IsShiftKeyDown() then
+		local presetOwner = UnitName("player")
+		ChatEdit_InsertLink(format("[RGO:PresetRequest:%s,%s,%s]", presetOwner, RGO:getPresetName(RgoFrameScrollBar.selection.index), RgoFrameScrollBar.selection.index))
+		RgoClearSelection(RgoFrameScrollBar, RgoFrameScrollBar.buttons);
+		return
+	end
+	
 	RgoPresetNameEditBox:SetText(RGO:getPresetName(RgoFrameScrollBar.selection.index))
 	
 	local group =  RGO:getPresetGroup(RgoFrameScrollBar.selection.index)
@@ -233,10 +240,7 @@ function RgoListEntry_OnClick (self, mouseButton)
 	
 	RgoRaidGoupFrame:Show()
 	
-	if IsShiftKeyDown() then
-		local presetOwner = UnitName("player")
-		ChatEdit_InsertLink(format("[RGO:PresetRequest:%s,%s,%s]", presetOwner, RgoPresetNameEditBox:GetText(), RgoFrameScrollBar.selection.index)) 
-	end
+
 end
 
 
