@@ -6,6 +6,63 @@ local dropTarget = nil
 
 SaveValidationErrors = {["doubleName"] = nil, ["presetNameEmpty"] = false}
 
+local requestData = {
+	["presetOwner"] = nil,
+	["presetName"] = nil,
+	["presetIndex"] = nil
+}
+
+local origChatFrame_OnHyperlinkShow = ChatFrame_OnHyperlinkShow;
+
+function RgoToolTipImport_OnClick(self)
+	RGO:SendMessage(format("%s %s,%s", AddonCommCommands["request_preset"], requestData["presetName"], requestData["presetIndex"]), requestData["presetOwner"])
+	RgoToolTipClose_OnClick(self)
+end
+
+function RgoToolTipClose_OnClick(self)
+	requestData["presetOwner"] = nil
+	requestData["presetName"] = nil
+	requestData["presetIndex"] = nil
+	self:GetParent():Hide()
+end
+
+ChatFrame_OnHyperlinkShow = function(...)
+	local chatFrame, link, text, button = ...;
+	if type(text) ~= "string" or IsModifiedClick() then
+		origChatFrame_OnHyperlinkShow(...)
+		return
+	end
+	local presetOwner, presetName, presetIndex  = string.match(link, "item:rgo:([^,]*),([^,]*),(.*)")
+	if presetName and presetOwner and presetIndex then
+		requestData["presetOwner"] = presetOwner
+		requestData["presetName"] = presetName
+		requestData["presetIndex"] = presetIndex
+		RgoToolTipText:SetText(format("Press the import button to import the Preset %s from %s", presetName, presetOwner))
+		
+		local mouseX, mouseY = GetCursorPosition()
+		RgoHyperLinkToolTip:ClearAllPoints()
+		RgoHyperLinkToolTip:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", mouseX, mouseY)
+		RgoHyperLinkToolTip:Show()
+	else
+		origChatFrame_OnHyperlinkShow(...)
+	end
+end
+
+
+local function modifyChatMessage(self, event, msg, sender, ...)
+	msg = string.gsub(msg, "%[RGO:PresetRequest:([^,]*),([^,]*),([^%]]*)%]", "\124cff0070dd\124Hitem:rgo:%1,%2,%3\124h[%2]\124h\124r")
+	return false, msg, sender, ...
+end
+
+ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", modifyChatMessage)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER ", modifyChatMessage)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", modifyChatMessage)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", modifyChatMessage)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", modifyChatMessage)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", modifyChatMessage)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_OFFICER", modifyChatMessage)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", modifyChatMessage)
+
 local function visitPlayerInfos(visitNameAndClass)
 	local numTotal = GetNumGuildMembers();
 	for i = 1, numTotal do
@@ -67,7 +124,7 @@ function RgoImportRaidIntoUI()
 		return
 	end
 
-	group = RGO:getCurrentRaidSetup()
+	local group = RGO:getCurrentRaidSetup()
 	for i = 1, 8 do
 		for j = 1, 5 do
 			local playerName = group[(i - 1) * 5 + j]
@@ -78,6 +135,7 @@ function RgoImportRaidIntoUI()
 		end
 	end
 end
+
 
 function RgoPresetOptionMenuButton_OnClick() 
     ToggleDropDownMenu(1, nil, RgoPresetOptionMenu, RgoPresetOptionMenuButton, 0, 0);
@@ -161,7 +219,7 @@ function RgoListEntry_OnClick (self, mouseButton)
 	
 	RgoPresetNameEditBox:SetText(RGO:getPresetName(RgoFrameScrollBar.selection.index))
 	
-	group =  RGO:getPresetGroup(RgoFrameScrollBar.selection.index)
+	local group =  RGO:getPresetGroup(RgoFrameScrollBar.selection.index)
 	for i = 1, 8 do
 		for j = 1, 5 do
 			local playerName = group[(i - 1) * 5 + j]
@@ -173,7 +231,13 @@ function RgoListEntry_OnClick (self, mouseButton)
 	end
 	
 	RgoRaidGoupFrame:Show()
+	
+	if IsShiftKeyDown() then
+		local presetOwner = UnitName("player")
+		ChatEdit_InsertLink(format("[RGO:PresetRequest:%s,%s,%s]", presetOwner, RgoPresetNameEditBox:GetText(), RgoFrameScrollBar.selection.index)) 
+	end
 end
+
 
 function RgoFrameAdd_OnClick(self, button)
 	RgoPresetNameEditBox:SetText("")
@@ -201,7 +265,7 @@ function RgoOpenCurrentPresetAsNew()
 	end
 	
 	RgoPresetNameEditBox:SetText("")
-	group =  RGO:getPresetGroup(RgoFrameScrollBar.selection.index)
+	local group =  RGO:getPresetGroup(RgoFrameScrollBar.selection.index)
 	for i = 1, 8 do
 		for j = 1, 5 do
 			local playerName = group[(i - 1) * 5 + j]
@@ -255,7 +319,7 @@ local function createErrorMessages()
 end
 
 function RgoFrameSave_OnClick(self, button)
-	if table.getn(createErrorMessages()) > 0 then
+	if #createErrorMessages() > 0 then
 		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 		return
 	end
@@ -270,37 +334,11 @@ function RgoFrameSave_OnClick(self, button)
 	RgoFrameScrollBar_Update()
 end
 
-local function sendMessage(msg, target)
-	RGO:SendCommMessage("rgo", msg, "WHISPER", target)
-end
-
 function RgoFrameShare_OnClick(self, button)
 	local target = RGO:TrimText(ShareEditBox:GetText())
-	if (target == "") then
-		return
-	end
 	local presetName = RGO:TrimText(RgoPresetNameEditBox:GetText())
-	if presetName == "" then
-		presetName = "unnamed"
-	end
-	print("Sending Raid Group Organizer preset "..presetName.." to " .. target)
-	sendMessage("start_transmission" .. " " .. presetName, target)
-	for i = 1, 8 do
-		local message = ""
-		for j = 1, 5 do
-			local playerName = RGO:TrimText(getglobal("FrameGroup".. i .."Player" .. j):GetText())
-			if(playerName == "") then
-				playerName = "[]"
-			end
-			message = message .. playerName
-			if j < 5 then
-				message = message .. ","
-			end
-		end
-		sendMessage(message, target)
-	end
-	sendMessage("end_transmission", target)
-	print("done")
+	
+	RGO:SendPreset(presetName, target, function(i, j) return RGO:TrimText(getglobal("FrameGroup".. i .."Player" .. j):GetText()) end)
 end
 
 local function resetDrag(draggedFrame, fontString)
@@ -408,7 +446,7 @@ end
 
 local function showTooltip(self)
 	local errorMessages = createErrorMessages()
-	if table.getn(errorMessages) > 0 then
+	if #errorMessages > 0 then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
 		GameTooltip:SetText("Cannot save", 1, 0, 0)
 		GameTooltip:AddLine(" ", 1, 1, 1)

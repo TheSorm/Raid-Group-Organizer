@@ -1,6 +1,62 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="RgoFrame.lua"/>
+	<Frame name="RgoHyperLinkToolTip" hidden="true" toplevel="true" inherits="TooltipBorderedFrameTemplate">
+		<Size>
+			<AbsDimension x="300" y="100"/>
+		</Size>
+		<Anchors>
+ 			  <Anchor point="CENTER" relativePoint="CENTER"/>
+ 		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString inherits="GameFontNormal" text="Preset Import">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="0" y="0">
+							<Offset>
+								<AbsDimension x="10" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="RgoToolTipText" inherits="GameTooltipText" width="100">
+					<Size x="280" y="50"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="0" y="0">
+							<Offset>
+								<AbsDimension x="10" y="-50"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="RgoToolTipClose_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentImportButton" inherits="UIPanelButtonTemplate" text="Import Preset">
+				 <Size>
+					<AbsDimension x="100" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="RgoToolTipImport_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
 	<Button name="DragAnchorTemplate" virtual="true" enableMouse="true" movable="true">
 		<Size x="13" y="13"/>
 		<Anchors>

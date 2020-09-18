@@ -1,6 +1,12 @@
 RGO = LibStub("AceAddon-3.0"):NewAddon("RGO", "AceEvent-3.0", "AceComm-3.0")
 RGO_Console = LibStub("AceConsole-3.0")
 
+AddonCommCommands = {
+	["end_transmission"] = "end_transmission",
+	["request_preset"] = "request_preset",
+	["start_transmission"] = "start_transmission"
+}
+
 --transmitting preset helper variables
 local transmittedGroups = nil
 local transmittedPresetName = nil
@@ -41,8 +47,48 @@ function RGO:TrimText(s)
    return s:match "^%s*(.-)%s*$"
 end
 
+function RGO:SendMessage(msg, target)
+	RGO:SendCommMessage("rgo", msg, "WHISPER", target)
+end
+
+function RGO:SendPreset(presetName, target, playerNameRequestor)
+	if not target or target == "" then
+		return
+	end
+	if not presetName or presetName == "" then
+		presetName = "unnamed"
+	end
+	--print("Sending Raid Group Organizer preset "..presetName.." to " .. target)
+	RGO:SendMessage(format("%s %s", AddonCommCommands["start_transmission"], presetName), target)
+	
+	for i = 1, 8 do
+		local message = ""
+		for j = 1, 5 do
+			local playerName = playerNameRequestor(i, j)
+			if(playerName == nil or playerName == "") then
+				playerName = "[]"
+			end
+			message = message .. playerName
+			if j < 5 then
+				message = message .. ","
+			end
+		end
+		RGO:SendMessage(message, target)
+	end
+	RGO:SendMessage(AddonCommCommands["end_transmission"], target)
+	--print("done")
+end
+
 function RGO:HandleAddonMessage(prefix, msg, distribution, sender)
-	if(msg == "end_transmission") then
+	local command = {}
+	for part in string.gmatch(msg, "[^%s]+") do
+	    command[#command + 1] = part 
+	end
+
+	if command[1] == AddonCommCommands["end_transmission"] then
+		if not (transmittedPresetName and transmittedGroups) then
+			return --wrong message order
+		end
 		for key,value in pairs(transmittedGroups) do
 			if value == "" then
 				transmittedGroups[key] = nil
@@ -53,20 +99,39 @@ function RGO:HandleAddonMessage(prefix, msg, distribution, sender)
 		
 		transmittedGroups = nil
 		transmittedPresetName = nil
-		print("done.")
-	else
-		local presetName = string.match(msg, "start_transmission (.+)")
-		if (presetName == nil) then
-			for playerName in string.gmatch(msg, "([^,]+)") do
-				if (playerName == "[]") then
-					playerName = ""
-				end
-				table.insert(transmittedGroups, playerName)
-			end
+		--print("done.")
+	elseif command[1] == AddonCommCommands["start_transmission"] then
+		if not command[2] then
+			return
+		end
+		transmittedPresetName = command[2]
+		transmittedGroups = {}
+		--print("Receiving Raid Group Organizer preset: " .. command[2])
+	elseif command[1] == AddonCommCommands["request_preset"] then
+		if not command[2] then
+			return
+		end
+		local argParts = {}
+		for part in string.gmatch(command[2], "[^,]+") do
+			argParts[#argParts + 1] = part 
+		end
+		if #argParts ~= 2 then
+			return
+		end
+		local presetName = argParts[1]
+		local index = argParts[2]
+		if sender ~= UnitName("player") then
+			local group =  RGO:getPresetGroup(tonumber(index))
+			RGO:SendPreset(presetName, sender, function(i, j) return group[(i - 1) * 5 + j] end)
 		else
-			transmittedPresetName = presetName
-			transmittedGroups = {}
-			print("Receiving Raid Group Organizer preset: " .. presetName)
+			--print("Requesting own preset")
+		end
+	else
+		for playerName in string.gmatch(msg, "([^,]+)") do
+			if (playerName == "[]") then
+				playerName = ""
+			end
+			table.insert(transmittedGroups, playerName)
 		end
 	end
 end
@@ -110,7 +175,7 @@ function RGO:PrintMissingPlayers(index)
 			end
 		end
 	end
-	if (table.getn(missinPlayers) > 0) then
+	if (#missinPlayers > 0) then
 		DEFAULT_CHAT_FRAME:AddMessage("Missing preset players: " .. table.concat(missinPlayers, ", " ), 1.0, 0.0, 0.0);
 	end
 end
