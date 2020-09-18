@@ -55,7 +55,8 @@ local function modifyChatMessage(self, event, msg, sender, ...)
 end
 
 ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", modifyChatMessage)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER ", modifyChatMessage)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", modifyChatMessage)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", modifyChatMessage)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", modifyChatMessage)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", modifyChatMessage)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", modifyChatMessage)
