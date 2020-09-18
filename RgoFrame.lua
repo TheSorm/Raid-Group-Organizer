@@ -334,13 +334,6 @@ function RgoFrameSave_OnClick(self, button)
 	RgoFrameScrollBar_Update()
 end
 
-function RgoFrameShare_OnClick(self, button)
-	local target = RGO:TrimText(ShareEditBox:GetText())
-	local presetName = RGO:TrimText(RgoPresetNameEditBox:GetText())
-	
-	RGO:SendPreset(presetName, target, function(i, j) return RGO:TrimText(getglobal("FrameGroup".. i .."Player" .. j):GetText()) end)
-end
-
 local function resetDrag(draggedFrame, fontString)
 	draggedFrame:ClearAllPoints()
 	draggedFrame:SetPoint(originalPoint[1],originalPoint[2],originalPoint[3],originalPoint[4],originalPoint[5])

@@ -615,40 +615,6 @@
 							<OnLeave function="RgoFrameSave_OnLeave"/>
 						</Scripts>
 					</Button>
-					<EditBox name="ShareEditBox" inherits="RgoNameEditBox">
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="RgoRaidGoupFrame" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="20" y="8"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnTextChanged>
-								local text = RGO:TrimText(self:GetText())
-								if(text == "") then
-									ShareButton:Disable()
-								else
-									ShareButton:Enable()
-								end
-							</OnTextChanged>
-						</Scripts>
-					</EditBox>
-					<Button name="ShareButton" inherits="UIPanelButtonTemplate" text="Share">
-						 <Size>
-							<AbsDimension x="70" y="22"/>
-						</Size>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="ShareEditBox" relativePoint="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="5" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick function="RgoFrameShare_OnClick"/>
-						</Scripts>
-					</Button>
 				</Frames>
 			</Frame>
 		</Frames>
