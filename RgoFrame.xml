@@ -33,6 +33,9 @@
 		</Layers>
 		<Frames>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Size>
+					<AbsDimension x="29" y="29"/>
+				</Size>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT"/>
 				</Anchors>
@@ -40,14 +43,14 @@
 					<OnClick function="RgoToolTipClose_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentImportButton" inherits="UIPanelButtonTemplate" text="Import Preset">
-				 <Size>
-					<AbsDimension x="100" y="22"/>
+			<Button name="RgoToolTipImportButton" inherits="UIPanelButtonTemplate" text="Import Preset">
+				<Size>
+					<AbsDimension x="100" y="20"/>
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-5" y="5"/>
+							<AbsDimension x="-6" y="7"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

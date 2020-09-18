@@ -37,7 +37,13 @@ ChatFrame_OnHyperlinkShow = function(...)
 		requestData["presetOwner"] = presetOwner
 		requestData["presetName"] = presetName
 		requestData["presetIndex"] = presetIndex
-		RgoToolTipText:SetText(format("Press the import button to import the Preset %s from %s", presetName, presetOwner))
+		if presetOwner == UnitName("player") then
+			RgoToolTipText:SetText(format("Other players can import your preset %s with this hyperlink.", presetName, presetOwner))
+			RgoToolTipImportButton:Disable()
+		else
+			RgoToolTipText:SetText(format("Press the import button to import the Preset %s from %s", presetName, presetOwner))
+			RgoToolTipImportButton:Enable()
+		end
 		
 		local mouseX, mouseY = GetCursorPosition()
 		RgoHyperLinkToolTip:ClearAllPoints()
