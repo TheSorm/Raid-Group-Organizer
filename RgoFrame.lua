@@ -383,11 +383,13 @@ local function updateDropTarget(draggedFrame)
 			local yOff = editBox:GetTop()
 			local width = editBox:GetWidth()
 			local height = editBox:GetHeight() - 2
-			if editBox ~= draggedFrame:GetParent() then			
-				if (draggedXOff > xOff and draggedXOff < (xOff + width) and draggedYOff < yOff and draggedYOff > (yOff - height)) then
-					dropTarget = editBox
+			if (draggedXOff > xOff and draggedXOff < (xOff + width) and draggedYOff < yOff and draggedYOff > (yOff - height)) then
+				dropTarget = editBox
+				if editBox ~= draggedFrame:GetParent() then	
 					editBox:SetAlpha(0.5)
-				else
+				end
+			else
+				if editBox ~= draggedFrame:GetParent() then		
 					editBox:SetAlpha(1)		
 				end
 			end
