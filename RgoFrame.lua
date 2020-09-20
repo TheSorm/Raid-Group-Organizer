@@ -140,12 +140,7 @@ local function firstToUpper(str)
     return (str:gsub("^%l", string.upper))
 end
 
-function RgoImportExternPresetButton_OnClick(self)
-	local text = RGO:TrimText(RgoImportExternScrollFrame.EditBox:GetText())
-	if not text or text == "" then
-		return
-	end
-	
+local function createGroupFromCommaList(text)
 	local group = {}
 	local index = 1
 	for playerName in string.gmatch(text, "[^,]+") do
@@ -162,6 +157,73 @@ function RgoImportExternPresetButton_OnClick(self)
 		end
 		index = index + 1
 	end
+	return group
+end
+
+local function makeDiff(groupFromCommaList, groupFromPreset)
+	local missingPlayers = {}
+	for i = 1, 8 do
+		for j = 1, 5 do
+			local playerName = groupFromPreset[(i - 1) * 5 + j]
+			if playerName then
+				local found = false
+				for i = 1, 40 do
+					if groupFromCommaList[i] == playerName then
+						groupFromCommaList[i] = nil
+						found = true
+						break
+					end
+				end
+				if not found then
+					table.insert(missingPlayers, {["playerName"] = playerName, ["group"] = i})
+				end
+			end
+		end
+	end
+	local newPlayers = {}
+	for i = 1, 40 do
+		local playerName = groupFromCommaList[i]
+		if playerName then
+			table.insert(newPlayers, playerName)
+		end
+	end
+	return missingPlayers, newPlayers
+end
+
+function RgoCompareExternPresetButton_OnClick(self)
+	local text = RGO:TrimText(RgoImportExternScrollFrame.EditBox:GetText())
+	if not text or text == "" then
+		return
+	end
+	if(not RgoFrameScrollBar.selection) then
+		return
+	end
+	local groupFromCommaList = createGroupFromCommaList(text)
+	local groupFromPreset = RGO:getPresetGroup(RgoFrameScrollBar.selection.index)
+	local missingPlayers, newPlayers = makeDiff(groupFromCommaList, groupFromPreset)
+	local textLines = "Missing:\n"
+	for k, v in pairs(missingPlayers) do
+		local playerName = v["playerName"]
+		local group = v["group"]
+		textLines = textLines .. "Group " .. group .. " Player: " .. playerName .. "\n"
+	end
+	textLines = textLines .. "--------------\n"
+	textLines = textLines .. "New:\n"
+	for k, v in pairs(newPlayers) do
+		textLines = textLines .. v .. "\n"
+	end
+	textLines = textLines .. "--------------"
+	RgoImportExternScrollFrame.EditBox:SetText(textLines)
+	RgoImportExternScrollFrame.EditBox:SetFocus() 
+end
+
+function RgoImportExternPresetButton_OnClick(self)
+	local text = RGO:TrimText(RgoImportExternScrollFrame.EditBox:GetText())
+	if not text or text == "" then
+		return
+	end
+	
+	local group = createGroupFromCommaList(text)
 	RgoImportExternFrame:Hide()
 	RgoOpenPreFilledPreset(group)
 end

@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="RgoFrame.lua"/>
-	<Frame name="RgoImportExternFrame" toplevel="true" hidden="true">
+	<Frame name="RgoImportExternFrame" toplevel="true" hidden="true" enableMouse="true" movable="true">
 		<Size>
 			<AbsDimension x="400" y="300"/>
 		</Size>
@@ -55,8 +55,7 @@
 					<OnLoad>
 						self.EditBox:SetFontObject("ChatFontNormal")
 						self.EditBox:SetWidth(345);
-						self.CharCount:Hide()
-						self.EditBox:SetMaxLetters(600)
+						self.EditBox:SetMaxLetters(1000)
 						self.EditBox:SetScript("OnTextChanged", function(self, userInput)
 							if(RGO:TrimText(self:GetText()) == "") then
 								RgoImportExternPresetButton:Disable()
@@ -68,7 +67,7 @@
 				</Scripts>
 			</ScrollFrame>
 			<Button name="RgoImportExternPresetButton" inherits="UIPanelButtonTemplate" text="Import">
-				 <Size>
+				<Size>
 					<AbsDimension x="70" y="22"/>
 				</Size>
 				<Anchors>
@@ -82,6 +81,21 @@
 					<OnClick function="RgoImportExternPresetButton_OnClick"/>
 				</Scripts>
 			</Button>
+			<Button name="RgoCompareExternPresetButton" inherits="UIPanelButtonTemplate" text="Compare">
+				<Size>
+					<AbsDimension x="70" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="RgoImportExternPresetButton">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="RgoCompareExternPresetButton_OnClick"/>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -89,7 +103,10 @@
 							edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
 							tile = true, tileSize = 16, edgeSize = 16, 
 							insets = { left = 4, right = 4, top = 4, bottom = 4 }});
+				self:RegisterForDrag("LeftButton")
 			</OnLoad>
+			<OnDragStart>self:StartMoving()</OnDragStart>
+			<OnDragStop>self:StopMovingOrSizing()</OnDragStop>
 		</Scripts>
 	</Frame>
 	<Frame name="RgoHyperLinkToolTip" hidden="true" toplevel="true" inherits="TooltipBorderedFrameTemplate">
