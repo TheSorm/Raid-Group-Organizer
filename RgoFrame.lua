@@ -125,6 +125,45 @@ function RgoPresetOptionMenu_OnLoad()
 	info.func = RgoImportRaidIntoUI
     info.notCheckable = true
 	UIDropDownMenu_AddButton(info)
+	
+	info.text = "Import extern"
+	info.func = RgoImportFromExtern
+    info.notCheckable = true
+	UIDropDownMenu_AddButton(info)
+end
+
+function RgoImportFromExtern()
+	RgoImportExternFrame:Show()
+end
+
+local function firstToUpper(str)
+    return (str:gsub("^%l", string.upper))
+end
+
+function RgoImportExternPresetButton_OnClick(self)
+	local text = RGO:TrimText(RgoImportExternScrollFrame.EditBox:GetText())
+	if not text or text == "" then
+		return
+	end
+	
+	local group = {}
+	local index = 1
+	for playerName in string.gmatch(text, "[^,]+") do
+		if index == 41 then
+			break
+		end
+		playerName = RGO:TrimText(playerName)
+		if playerName ~= "" and strlenutf8(playerName) <= 12 then
+			playerName = firstToUpper(playerName)
+			playerName = playerName
+			group[index] = playerName
+		else
+			group[index] = nil
+		end
+		index = index + 1
+	end
+	RgoImportExternFrame:Hide()
+	RgoOpenPreFilledPreset(group)
 end
 
 function RgoImportRaidIntoUI()
@@ -276,8 +315,13 @@ function RgoOpenCurrentPresetAsNew()
 		return
 	end
 	
+	local group = RGO:getPresetGroup(RgoFrameScrollBar.selection.index)
+	RgoOpenPreFilledPreset(group)
+end
+
+function RgoOpenPreFilledPreset(group)
 	RgoPresetNameEditBox:SetText("")
-	local group =  RGO:getPresetGroup(RgoFrameScrollBar.selection.index)
+	
 	for i = 1, 8 do
 		for j = 1, 5 do
 			local playerName = group[(i - 1) * 5 + j]
@@ -290,7 +334,7 @@ function RgoOpenCurrentPresetAsNew()
 	RgoPresetNameEditBox:SetFocus() 
 
 	RgoClearSelection(RgoFrameScrollBar, RgoFrameScrollBar.buttons);
-	RgoRaidGoupFrame:Show()
+	RgoRaidGoupFrame:Show() --how can it be hidden now?
 end
 
 local function checkDuplicatePlayers(group)

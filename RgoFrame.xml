@@ -1,6 +1,97 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="RgoFrame.lua"/>
+	<Frame name="RgoImportExternFrame" toplevel="true" hidden="true">
+		<Size>
+			<AbsDimension x="400" y="300"/>
+		</Size>
+		<Anchors>
+			  <Anchor point="CENTER" relativePoint="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString inherits="GameFontNormal" text="Preset Import">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="0" y="0">
+							<Offset>
+								<AbsDimension x="20" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameTooltipText" width="100" text="Paste text here:">
+					<Size x="280" y="50"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="0" y="0">
+							<Offset>
+								<AbsDimension x="20" y="-50"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Size>
+					<AbsDimension x="29" y="29"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT"/>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="RgoImportExternScrollFrame" inherits="InputScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="345" y="200"/>
+				</Size>
+				<Anchors>
+					  <Anchor point="BOTTOM" relativePoint="BOTTOM">
+						<Offset>
+								<AbsDimension x="-4" y="40"/>
+						</Offset>
+					  </Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.EditBox:SetFontObject("ChatFontNormal")
+						self.EditBox:SetWidth(345);
+						self.CharCount:Hide()
+						self.EditBox:SetMaxLetters(600)
+						self.EditBox:SetScript("OnTextChanged", function(self, userInput)
+							if(RGO:TrimText(self:GetText()) == "") then
+								RgoImportExternPresetButton:Disable()
+							else
+								RgoImportExternPresetButton:Enable()
+							end
+						end)
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="RgoImportExternPresetButton" inherits="UIPanelButtonTemplate" text="Import">
+				 <Size>
+					<AbsDimension x="70" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-7" y="7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="RgoImportExternPresetButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetBackdrop({bgFile = "Interface/TutorialFrame/TutorialFrameBackground", 
+							edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+							tile = true, tileSize = 16, edgeSize = 16, 
+							insets = { left = 4, right = 4, top = 4, bottom = 4 }});
+			</OnLoad>
+		</Scripts>
+	</Frame>
 	<Frame name="RgoHyperLinkToolTip" hidden="true" toplevel="true" inherits="TooltipBorderedFrameTemplate">
 		<Size>
 			<AbsDimension x="300" y="100"/>
