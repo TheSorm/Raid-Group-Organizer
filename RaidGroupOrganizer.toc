@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Title: Raid Group Organizer
 ## Author: Thorgeirr
 ## Notes: A raid group organizer
