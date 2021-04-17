@@ -26,10 +26,9 @@ function RgoToolTipClose_OnClick(self)
 	self:GetParent():Hide()
 end
 
-ChatFrame_OnHyperlinkShow = function(...)
+hooksecurefunc("ChatFrame_OnHyperlinkShow", function(...)
 	local chatFrame, link, text, button = ...;
 	if type(text) ~= "string" or IsModifiedClick() then
-		origChatFrame_OnHyperlinkShow(...)
 		return
 	end
 	local presetOwner, presetName, presetIndex  = string.match(link, "item:rgo:([^,]*),([^,]*),(.*)")
@@ -49,10 +48,8 @@ ChatFrame_OnHyperlinkShow = function(...)
 		RgoHyperLinkToolTip:ClearAllPoints()
 		RgoHyperLinkToolTip:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", mouseX, mouseY)
 		RgoHyperLinkToolTip:Show()
-	else
-		origChatFrame_OnHyperlinkShow(...)
 	end
-end
+end)
 
 
 local function modifyChatMessage(self, event, msg, sender, ...)
