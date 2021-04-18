@@ -12,8 +12,6 @@ local requestData = {
 	["presetIndex"] = nil
 }
 
-local origChatFrame_OnHyperlinkShow = ChatFrame_OnHyperlinkShow;
-
 function RgoToolTipImport_OnClick(self)
 	RGO:SendMessage(format("%s %s,%s", AddonCommCommands["request_preset"], requestData["presetName"], requestData["presetIndex"]), requestData["presetOwner"])
 	RgoToolTipClose_OnClick(self)
@@ -104,27 +102,31 @@ function RgoFrame_OnTextChanged(editBox)
 end
 
 function RgoPresetOptionMenu_OnLoad()
+
 	local info = UIDropDownMenu_CreateInfo()
-   
 	info.text = "Options"
     info.isTitle  = true
 	info.notCheckable = true
 	UIDropDownMenu_AddButton(info)
 	
 	info = UIDropDownMenu_CreateInfo()
-   
 	info.text = "Duplicate"
 	info.func = RgoOpenCurrentPresetAsNew
+	info.isTitle  = false
     info.notCheckable = true
 	UIDropDownMenu_AddButton(info)
 	
+	info = UIDropDownMenu_CreateInfo()
 	info.text = "Import Raid"
 	info.func = RgoImportRaidIntoUI
+	info.isTitle  = false
     info.notCheckable = true
 	UIDropDownMenu_AddButton(info)
 	
+	info = UIDropDownMenu_CreateInfo()
 	info.text = "Import extern"
 	info.func = RgoImportFromExtern
+	info.isTitle  = false
     info.notCheckable = true
 	UIDropDownMenu_AddButton(info)
 end

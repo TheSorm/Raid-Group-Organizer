@@ -34,7 +34,7 @@ function RGO:OnInitialize()
 	
 	RGO:CreatePresetDropdownInRaidFrame() 
 	
-	RGO:UpdateDropdownVisibility() 
+	--RGO:UpdateDropdownVisibility() 
 end
 
 function RGO:OnEnable()
@@ -194,9 +194,9 @@ function RgoDropDownMenu_Initialize (frame, level, menuList)
 	for i = 1, #RGO.db.realm.presetIndexToPresetName do
 		info.func = presetDropDown_OnClick
 		info.text = RGO.db.realm.presetIndexToPresetName[i]
-		info.checked  = false 
 		info.arg1 = i
 		UIDropDownMenu_AddButton(info)
+		info = UIDropDownMenu_CreateInfo()
 	end
 end
 
