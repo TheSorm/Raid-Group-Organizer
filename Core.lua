@@ -34,7 +34,7 @@ function RGO:OnInitialize()
 	
 	RGO:CreatePresetDropdownInRaidFrame() 
 	
-	--RGO:UpdateDropdownVisibility() 
+	RGO:UpdateDropdownVisibility() 
 end
 
 function RGO:OnEnable()
