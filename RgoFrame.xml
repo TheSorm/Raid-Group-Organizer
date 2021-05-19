@@ -20,7 +20,6 @@
 					</Anchors>
 				</FontString>
 				<FontString inherits="GameTooltipText" width="100" text="Paste text here:">
-					<Size x="280" y="50"/>
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="TOPLEFT" x="0" y="0">
 							<Offset>
@@ -99,10 +98,15 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				self:SetBackdrop({bgFile = "Interface/TutorialFrame/TutorialFrameBackground", 
-							edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
-							tile = true, tileSize = 16, edgeSize = 16, 
-							insets = { left = 4, right = 4, top = 4, bottom = 4 }});
+				Mixin(self, BackdropTemplateMixin)
+						self:SetBackdrop({
+							bgFile = "Interface\\TutorialFrame\\TutorialFrameBackground", 
+							edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+							tile = true,
+							tileSize = 32,
+							edgeSize = 16,
+							insets = {left = 5, right = 4, top = 5, bottom = 5},
+						})
 				self:RegisterForDrag("LeftButton")
 			</OnLoad>
 			<OnDragStart>self:StartMoving()</OnDragStart>
@@ -128,7 +132,6 @@
 					</Anchors>
 				</FontString>
 				<FontString name="RgoToolTipText" inherits="GameTooltipText" width="100">
-					<Size x="280" y="50"/>
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="TOPLEFT" x="0" y="0">
 							<Offset>
@@ -252,13 +255,17 @@
 		<Size>
             <AbsDimension x="160" y="110"/>
         </Size>
-		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize val="16"/>
-			<TileSize val="32"/>
-			<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
-		</Backdrop>
 		<Scripts>
 			<OnLoad>
+				Mixin(self, BackdropTemplateMixin)
+				self:SetBackdrop({
+					bgFile = "Interface\\TutorialFrame\\TutorialFrameBackground", 
+					edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+					tile = true,
+					tileSize = 32,
+					edgeSize = 16,
+					insets = {left = 5, right = 4, top = 5, bottom = 5},
+				})
 				self:SetBackdropBorderColor(0.5,0.5,0.5);
 			</OnLoad>
 		</Scripts>
@@ -311,27 +318,16 @@
 		</Frames>
 	</Frame>
 	
-	<Frame name="RgoFrame" toplevel="true" enableMouse="true" enableKeyboard="true" movable="true" parent="UIParent" hidden="true">
+	<Frame name="RgoFrame" toplevel="true" enableMouse="true" enableKeyboard="true" movable="true" parent="UIParent" hidden="true" inherits="BackdropTemplate">
 		<Size>
 			<AbsDimension x="525" y="590"/>
 		</Size>
 		<Anchors>
  			  <Anchor point="CENTER" relativePoint="CENTER"/>
  		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="35" top="0" bottom="75"/>
-		</HitRectInsets>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="11" top="12" bottom="10"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="RgoDummyText" inherits="GameFontNormal" hidden="true">
@@ -374,17 +370,19 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="5" right="5" top="6" bottom="5"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="24"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="24"/>
-					</EdgeSize>
-				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						Mixin(self, BackdropTemplateMixin)
+						self:SetBackdrop({
+							bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background", 
+							edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+							tile = true,
+							tileSize = 24,
+							edgeSize = 24,
+							insets = {left = 5, right = 5, top = 5, bottom = 5},
+						})
+					</OnLoad>
+				</Scripts>
 			</Button>
 			<Button name="AddPresetButton" inherits="UIPanelButtonTemplate" text="Add">
 				 <Size>
@@ -429,12 +427,17 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				 <Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" tile="true">
-					<TileSize val="32"/>
-					<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
-				</Backdrop>
 				<Scripts>
 					<OnLoad>
+						Mixin(self, BackdropTemplateMixin)
+						self:SetBackdrop({
+							bgFile = "Interface\\TutorialFrame\\TutorialFrameBackground", 
+							edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+							tile = true,
+							tileSize = 32,
+							edgeSize = 16,
+							insets = {left = 5, right = 4, top = 5, bottom = 5},
+						})
 						OptionsList_OnLoad(self, "RgoListEntryTemplate");
 						self.update = RgoFrameScrollBar_Update;
 					</OnLoad>
@@ -453,11 +456,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize val="16"/>
-					<TileSize val="32"/>
-					<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
-				</Backdrop>
 				<Frames>
 					<Frame>
 						<Size>
@@ -470,11 +468,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>		
-						<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize val="16"/>
-							<TileSize val="32"/>
-							<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
-						</Backdrop>
 						<Frames>
 							<EditBox name="RgoPresetNameEditBox" autoFocus="false" inherits="InputBoxScriptTemplate">
 								<Anchors>
@@ -504,6 +497,19 @@
 								<FontString inherits="ChatFontNormal"/>
 							</EditBox>
 						</Frames>
+						<Scripts>
+							<OnLoad>
+								Mixin(self, BackdropTemplateMixin)
+								self:SetBackdrop({
+									bgFile = "Interface\\TutorialFrame\\TutorialFrameBackground", 
+									edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+									tile = true,
+									tileSize = 32,
+									edgeSize = 16,
+									insets = {left = 5, right = 4, top = 5, bottom = 5},
+								})
+							</OnLoad>
+						</Scripts>
 					</Frame>
 					<Button name="RgoPresetOptionMenuButton">
 						 <Size>
@@ -727,10 +733,24 @@
 						</Scripts>
 					</Button>
 				</Frames>
+				<Scripts>
+					<OnLoad>
+						Mixin(self, BackdropTemplateMixin)
+						self:SetBackdrop({
+							bgFile = "Interface\\TutorialFrame\\TutorialFrameBackground", 
+							edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+							tile = true,
+							tileSize = 32,
+							edgeSize = 16,
+							insets = {left = 5, right = 4, top = 5, bottom = 5},
+						})
+					</OnLoad>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
+				self:OnBackdropLoaded();
 				tinsert(UISpecialFrames, self:GetName())
 				RgoFrame_OnLoad()
 				self:RegisterForDrag("LeftButton");
