@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 20502
 ## Title: Raid Group Organizer
 ## Author: Thorgeirr
 ## Notes: A raid group organizer

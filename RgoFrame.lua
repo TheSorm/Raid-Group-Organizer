@@ -502,16 +502,7 @@ local function updateDropTarget(draggedFrame)
 	end
 end
 
-local function initDraggableFrame(draggedFrame, fontString)
-	local tmpFrame = CreateFrame("Frame", nil, draggedFrame);
-	tmpFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT");
-	tmpFrame:SetPoint("TOPRIGHT", draggedFrame, "TOPLEFT");
-	tmpFrame:SetScript("OnSizeChanged", function(self, w, h)
-		if not draggedFrame.isMoving then
-			return
-		end
-		updateDropTarget(draggedFrame)
-	end);		
+local function initDraggableFrame(draggedFrame, fontString)		
 	draggedFrame:SetScript("OnMouseDown", function(self, button)
 		if button == "LeftButton" and not self.isMoving then
 			local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
@@ -527,6 +518,7 @@ local function initDraggableFrame(draggedFrame, fontString)
 	end)
 	draggedFrame:SetScript("OnMouseUp", function(self, button)
 		if button == "LeftButton" and self.isMoving then
+			updateDropTarget(self)
 			trySwap(draggedFrame)
 			self:StopMovingOrSizing();
 			self:SetUserPlaced(false)
